@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the React app for production
+ENV GENERATE_SOURCEMAP=false
 RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build
 
 # Production stage
