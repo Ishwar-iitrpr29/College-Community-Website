@@ -630,6 +630,8 @@ import {
   CalendarToday as CalendarIcon,
   Work as WorkIcon,
   ArrowBack as ArrowBackIcon,
+  SmartToy as BotIcon,
+  Send as SendIcon,
 } from "@mui/icons-material"
 import PageHeader from "./PageHeader"
 
@@ -655,6 +657,11 @@ const InterviewExperiences = () => {
     tips: "",
     tags: [],
   })
+
+  // Chat state
+  const [chatMessages, setChatMessages] = useState([])
+  const [chatInput, setChatInput] = useState("")
+  const [isChatLoading, setIsChatLoading] = useState(false)
 
   // Fetch interview experiences from backend
   useEffect(() => {
@@ -715,6 +722,39 @@ const InterviewExperiences = () => {
     if (filterType) params.type = filterType
 
     fetchInterviews(params)
+  }
+
+  const handleSendChat = async () => {
+    if (!chatInput.trim() || !selectedInterview) return
+
+    const userMessage = chatInput.trim()
+    setChatMessages((prev) => [...prev, { sender: "user", text: userMessage }])
+    setChatInput("")
+    setIsChatLoading(true)
+
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ query: userMessage, context_id: `interview_${selectedInterview.id}` }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setChatMessages((prev) => [...prev, { sender: "bot", text: data.answer }])
+      } else {
+        setChatMessages((prev) => [...prev, { sender: "bot", text: `Error: ${data.error || "Something went wrong."}` }])
+      }
+    } catch (error) {
+      setChatMessages((prev) => [...prev, { sender: "bot", text: "Network error. Could not connect to the AI service." }])
+    } finally {
+      setIsChatLoading(false)
+    }
   }
 
   // Handle form input changes
@@ -1288,9 +1328,70 @@ const InterviewExperiences = () => {
                   {selectedInterview.tags &&
                     selectedInterview.tags.map((tag, index) => <Chip key={index} label={tag} size="small" />)}
                 </Box>
+
+                <Divider sx={{ my: 2 }} />
+                
+                {/* Localized Chatbot UI */}
+                <Typography variant="h6" sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
+                  <BotIcon color="primary" /> Ask AI about this interview
+                </Typography>
+                <Box sx={{ bgcolor: "#f8f9fa", p: 2, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
+                  <Box sx={{ maxHeight: 200, overflowY: "auto", mb: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+                    {chatMessages.length === 0 && (
+                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", py: 2 }}>
+                        Ask any specific questions about this interview experience!
+                      </Typography>
+                    )}
+                    {chatMessages.map((msg, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+                          maxWidth: "85%",
+                          bgcolor: msg.sender === "user" ? "primary.main" : "white",
+                          color: msg.sender === "user" ? "white" : "#000000",
+                          p: 1.5,
+                          borderRadius: 2,
+                          boxShadow: 1,
+                        }}
+                      >
+                        <Typography variant="body2">{msg.text}</Typography>
+                      </Box>
+                    ))}
+                    {isChatLoading && (
+                      <Box sx={{ alignSelf: "flex-start", bgcolor: "white", p: 1.5, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          thinking...
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Ask a question..."
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault()
+                          handleSendChat()
+                        }
+                      }}
+                    />
+                    <IconButton
+                      color="primary"
+                      onClick={handleSendChat}
+                      disabled={isChatLoading || !chatInput.trim()}
+                    >
+                      <SendIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setViewDialog(false)}>Close</Button>
+                <Button onClick={() => { setViewDialog(false); setChatMessages([]); setChatInput(""); }}>Close</Button>
               </DialogActions>
             </>
           )}

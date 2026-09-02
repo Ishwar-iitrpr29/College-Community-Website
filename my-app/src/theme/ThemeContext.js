@@ -19,6 +19,7 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
   const toggleDarkMode = () => {
@@ -29,22 +30,22 @@ export const ThemeProvider = ({ children }) => {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#5C6BC0', // Indigo
-        light: '#7986CB',
-        dark: '#3949AB',
+        main: '#6366f1', // Indigo
+        light: '#818cf8',
+        dark: '#4f46e5',
       },
       secondary: {
-        main: '#7C4DFF', // Deep Purple
-        light: '#9575FF',
-        dark: '#651FFF',
+        main: '#ec4899', // Pink
+        light: '#f472b6',
+        dark: '#db2777',
       },
       background: {
-        default: darkMode ? '#121212' : '#F5F5F5',
-        paper: darkMode ? '#1E1E1E' : '#FFFFFF',
+        default: darkMode ? '#0f172a' : '#f8fafc',
+        paper: darkMode ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255, 255, 255, 0.8)',
       },
       text: {
-        primary: darkMode ? '#FFFFFF' : '#212121',
-        secondary: darkMode ? '#B0B0B0' : '#757575',
+        primary: darkMode ? '#f8fafc' : '#0f172a',
+        secondary: darkMode ? '#94a3b8' : '#64748b',
       },
     },
     typography: {

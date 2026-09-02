@@ -2609,6 +2609,7 @@ import string
 # Add these imports to the existing imports
 from app_updates import register_updates_blueprint
 from models import UserStateTransition, UserPreference, UpdateInteraction
+import ai_service
 
 # Load environment variables from .env file
 load_dotenv()
@@ -3792,6 +3793,40 @@ def upload_file():
         try:
             db.session.add(new_upload)
             db.session.commit()
+            
+            # --- AI RAG Ingestion ---
+            try:
+                import threading
+                # Extract values before thread starts to prevent DetachedInstanceError
+                file_url = new_upload.file_url
+                file_type = new_upload.file_type
+                course_code = new_upload.course_code
+                description = new_upload.description
+                tags = new_upload.tags
+                upload_id = new_upload.id
+                
+                def ingest_task(f_url, f_type, c_code, desc, tgs, u_id):
+                    try:
+                        if f_url:
+                            if f_type == 'pdf':
+                                content = ai_service.extract_text_from_pdf(f_url)
+                            else:
+                                content = f"Title: {c_code}\nDescription: {desc}\nTags: {tgs}"
+                            
+                            metadata = {
+                                "type": "study_material",
+                                "course_code": c_code,
+                                "tags": tgs,
+                                "url": f_url
+                            }
+                            ai_service.ingest_to_pinecone(content, metadata, f"upload_{u_id}")
+                    except Exception as e:
+                        print(f"Background ingestion failed: {e}")
+                threading.Thread(target=ingest_task, args=(file_url, file_type, course_code, description, tags, upload_id)).start()
+            except Exception as ai_e:
+                print(f"AI Ingestion setup error: {str(ai_e)}")
+            # -------------------------
+            
             return jsonify({
                 'message': 'Upload successful',
                 'file_url': new_upload.file_url
@@ -4324,7 +4359,7 @@ def get_jobs():
         "api_key": api_key,
         "field": field,
         "geoid": geoid,
-        "page": 1,
+        "page": page if page else 1,
         "sortBy": sort_by,
         "jobType": job_type,
         "expLevel": exp_level,
@@ -4473,6 +4508,34 @@ def add_placement():
                 })
         
         db.session.commit()
+        
+        # --- AI RAG Ingestion ---
+        try:
+            import threading
+            p_company = new_placement.company
+            p_role = new_placement.role
+            p_type = new_placement.type
+            p_mode = new_placement.mode
+            p_year = new_placement.year
+            p_referral = new_placement.referral
+            p_id = new_placement.id
+            
+            def ingest_task(c, r, t, m, y, ref, pid):
+                try:
+                    content = f"Company: {c}\nRole: {r}\nType: {t}\nMode: {m}\nYear: {y}\nReferral available: {ref}"
+                    metadata = {
+                        "type": "placement",
+                        "company": c,
+                        "role": r,
+                        "year": str(y)
+                    }
+                    ai_service.ingest_to_pinecone(content, metadata, f"placement_{pid}")
+                except Exception as e:
+                    print(f"Background ingestion failed: {e}")
+            threading.Thread(target=ingest_task, args=(p_company, p_role, p_type, p_mode, p_year, p_referral, p_id)).start()
+        except Exception as ai_e:
+            print(f"AI Ingestion setup error: {str(ai_e)}")
+        # -------------------------
         
         return jsonify({
             'message': 'Placement added successfully',
@@ -4655,6 +4718,37 @@ def add_interview_experience():
                 })
         
         db.session.commit()
+        
+        # --- AI RAG Ingestion ---
+        try:
+            import threading
+            i_company = new_interview.company
+            i_candidate_name = new_interview.candidate_name
+            i_year = new_interview.year
+            i_tips = new_interview.tips
+            i_tags = new_interview.tags
+            i_id = new_interview.id
+            q_data = list(questions_data) # copy just in case
+            
+            def ingest_task(comp, cand, yr, tip, tg, iid, qds):
+                try:
+                    content = f"Company: {comp}\nCandidate: {cand}\nYear: {yr}\nTips: {tip}\n\nQuestions and Answers:\n"
+                    for q in qds:
+                        content += f"Q: {q['question']}\nA: {q['answer']}\n\n"
+                    
+                    metadata = {
+                        "type": "interview_experience",
+                        "company": comp,
+                        "year": yr,
+                        "tags": tg
+                    }
+                    ai_service.ingest_to_pinecone(content, metadata, f"interview_{iid}")
+                except Exception as e:
+                    print(f"Background ingestion failed: {e}")
+            threading.Thread(target=ingest_task, args=(i_company, i_candidate_name, i_year, i_tips, i_tags, i_id, q_data)).start()
+        except Exception as ai_e:
+            print(f"AI Ingestion setup error: {str(ai_e)}")
+        # -------------------------
         
         return jsonify({
             'message': 'Interview experience added successfully',
@@ -5185,6 +5279,67 @@ def check_credentials():
             'error': 'Server error',
             'message': 'An unexpected error occurred. Please try again later.'
         }), 500
+
+@app.route('/api/resume-review', methods=['POST'])
+def resume_review():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+            
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+            
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are supported'}), 400
+            
+        # Extract text from the uploaded PDF
+        import PyPDF2
+        import io
+        
+        pdf_file = io.BytesIO(file.read())
+        reader = PyPDF2.PdfReader(pdf_file)
+        
+        resume_text = ""
+        for page in reader.pages:
+            resume_text += page.extract_text() + "\n"
+            
+        if not resume_text.strip():
+            return jsonify({'error': 'Could not extract text from the PDF. Make sure it is text-based.'}), 400
+            
+        job_role = request.form.get('job_role', 'Software Engineering')
+            
+        # Pass to AI service
+        feedback = ai_service.review_resume(resume_text, job_role)
+        
+        return jsonify({
+            'feedback': feedback
+        })
+        
+    except Exception as e:
+        print(f"Error in resume_review: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chat', methods=['POST'])
+def chat_with_ai():
+    try:
+        data = request.get_json()
+        query = data.get('query')
+        context_id = data.get('context_id') # e.g., 'upload_1', 'placement_2'
+        
+        print(f"DEBUG /api/chat: query='{query}', context_id='{context_id}'")
+        
+        if not query:
+            return jsonify({'error': 'Query is required'}), 400
+            
+        answer = ai_service.query_rag(query, context_id)
+        
+        return jsonify({
+            'answer': answer
+        }), 200
+    except Exception as e:
+        print(f"Chat API Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

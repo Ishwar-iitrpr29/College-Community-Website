@@ -253,6 +253,7 @@ import {
   ContactMail,
   Work, // Added Work icon for Jobs
   WorkOutline, // Added WorkOutline icon for Internships and Placements
+  Description as DescriptionIcon,
 } from '@mui/icons-material';
 import { useTheme as useCustomTheme } from '../theme/ThemeContext';
 import { useAuth } from '../context/auth/AuthContext';
@@ -289,6 +290,7 @@ const PageHeader = ({ title }) => {
     { text: 'Resources', icon: <School />, path: '/resources' },
     { text: 'Jobs', icon: <Work />, path: '/jobs' }, // Added Jobs menu item
     { text: "Internships & Placements", icon: <WorkOutline />, path: "/internships-placements" }, // Add this new menu item
+    { text: 'Resume AI', icon: <DescriptionIcon />, path: '/resume-review' },
     { text: 'About Us', icon: <Info />, path: '/about' },
     { text: 'Contact', icon: <ContactMail />, path: '/contact' },
   ];
@@ -297,9 +299,10 @@ const PageHeader = ({ title }) => {
     <AppBar 
       position="static" 
       elevation={0}
+      className="glass-card"
       sx={{
         background: 'transparent',
-        borderBottom: '1px solid',
+        borderBottom: 'none',
         borderColor: 'divider',
         backdropFilter: 'blur(8px)',
       }}

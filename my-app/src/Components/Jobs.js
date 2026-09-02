@@ -260,7 +260,7 @@
 // export default Jobs;
 
 import React, { useState } from 'react';
-import { Box, Container, Typography, useTheme, alpha } from '@mui/material';
+import { Box, Container, Typography, alpha, Button, CircularProgress, useTheme } from '@mui/material';
 import PageHeader from './PageHeader';
 import SearchForm from './SearchForm';
 import JobList from './JobList';
@@ -357,17 +357,23 @@ function Jobs() {
   const theme = useTheme();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [currentSearchParams, setCurrentSearchParams] = useState({});
 
   const searchJobs = async (searchParams) => {
     setLoading(true);
     setError(null);
+    setPage(1);
+    setCurrentSearchParams(searchParams);
 
     try {
       const queryParams = new URLSearchParams();
       Object.entries(searchParams).forEach(([key, value]) => {
         if (value) queryParams.append(key, value);
       });
+      queryParams.append('page', 1);
 
       const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
 
@@ -382,6 +388,34 @@ function Jobs() {
       setJobs([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMoreJobs = async () => {
+    setLoadingMore(true);
+    setError(null);
+    const nextPage = page + 1;
+
+    try {
+      const queryParams = new URLSearchParams();
+      Object.entries(currentSearchParams).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value);
+      });
+      queryParams.append('page', nextPage);
+
+      const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setJobs([...jobs, ...data]);
+      setPage(nextPage);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -486,7 +520,23 @@ function Jobs() {
             `}</style>
           </Box>
         ) : (
-          <JobList jobs={jobs} />
+          <>
+            <JobList jobs={jobs} />
+            {jobs.length > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
+                <Button 
+                  variant="outlined" 
+                  size="large"
+                  onClick={loadMoreJobs}
+                  disabled={loadingMore}
+                  sx={{ borderRadius: 2, px: 4 }}
+                >
+                  {loadingMore ? <CircularProgress size={24} sx={{ mr: 1 }} /> : null}
+                  {loadingMore ? 'Loading...' : 'Load More Jobs'}
+                </Button>
+              </Box>
+            )}
+          </>
         )}
       </Container>
     </Box>

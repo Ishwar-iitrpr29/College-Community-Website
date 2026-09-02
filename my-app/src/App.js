@@ -19,6 +19,8 @@ import DiscussionPage from "./Components/DiscussionPage"
 import NoticesPage from "./Components/notices/NoticePage"
 import ProfileNew from "./Components/ProfileNew"
 import ResetPassword from './Components/ResetPassword'
+import ResumeReviewer from "./Components/ResumeReviewer"
+
 
 function App() {
   return (
@@ -139,11 +141,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/resume-review"
+                element={
+                  <ProtectedRoute>
+                    <ResumeReviewer />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/reset-password" element={<ResetPassword />} />
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             {/* <Footer /> */}
+
           </Box>
         </Router>
       </ThemeProvider>

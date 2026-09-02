@@ -35,7 +35,8 @@ import {
   Pagination,
   Snackbar,
   Alert,
-  Tooltip
+  Tooltip,
+  InputAdornment
 } from '@mui/material';
 import {
   CloudUpload as CloudUploadIcon,
@@ -52,7 +53,9 @@ import {
   Share as ShareIcon,
   Chat as ChatIcon,
   Download as DownloadIcon,
+  Clear as ClearIcon,
   Description as DescriptionIcon,
+  SmartToy as BotIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import PageHeader from './PageHeader';
@@ -173,7 +176,7 @@ const Resource = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // State for tabs
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue] = useState(0);
 
   // State for upload form
   const [openUpload, setOpenUpload] = useState(false);
@@ -218,6 +221,12 @@ const Resource = () => {
   // Add new state for snackbar
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
+  // Local AI Chat state
+  const [openChatId, setOpenChatId] = useState(null);
+  const [chatMessages, setChatMessages] = useState({});
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
   // Fetch materials
   const fetchMaterials = async (page = 1) => {
     setIsLoading(true);
@@ -245,8 +254,94 @@ const Resource = () => {
   }, [currentPage]);
 
   // Handle tab change
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
+  // Removed unused handleTabChange
+
+  const handleToggleChat = (materialId) => {
+    if (openChatId === materialId) {
+      setOpenChatId(null);
+    } else {
+      setOpenChatId(materialId);
+      if (!chatMessages[materialId]) {
+        setChatMessages(prev => ({
+          ...prev,
+          [materialId]: [{ sender: 'bot', text: 'Hi! Ask me anything strictly about this specific material.' }]
+        }));
+      }
+    }
+  };
+
+  const handleSendChat = async (materialId) => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput.trim();
+    setChatMessages(prev => ({
+      ...prev,
+      [materialId]: [...(prev[materialId] || []), { sender: 'user', text: userMessage }]
+    }));
+    setChatInput('');
+    setIsChatLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ query: userMessage, context_id: `upload_${materialId}` })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setChatMessages(prev => ({
+          ...prev,
+          [materialId]: [...prev[materialId], { sender: 'bot', text: data.answer }]
+        }));
+      } else {
+        setChatMessages(prev => ({
+          ...prev,
+          [materialId]: [...prev[materialId], { sender: 'bot', text: `Error: ${data.error || 'Something went wrong.'}` }]
+        }));
+      }
+    } catch (error) {
+      setChatMessages(prev => ({
+        ...prev,
+        [materialId]: [...prev[materialId], { sender: 'bot', text: 'Network error. Could not connect to the AI service.' }]
+      }));
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const handleDownload = async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      
+      // Extract filename from URL or use a default
+      const filename = url.split('/').pop() || 'study_material';
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to download file directly. Opening in new tab instead.',
+        severity: 'warning'
+      });
+      // Fallback to opening in new tab
+      window.open(url, '_blank');
+    }
   };
 
   // Handle upload dialog
@@ -557,17 +652,15 @@ const Resource = () => {
         transition={{ duration: 0.3 }}
       >
         <Card 
+          className="glass-card glow-on-hover"
           sx={{ 
             height: '100%', 
             display: 'flex', 
             flexDirection: 'column',
             position: 'relative',
             width: '100%',
-            '&:hover': {
-              transform: 'translateY(-4px)',
-              boxShadow: 3,
-              transition: 'all 0.3s ease-in-out'
-            }
+            overflow: 'hidden',
+            backgroundColor: 'transparent'
           }}
         >
           {material.file_url ? (
@@ -607,8 +700,10 @@ const Resource = () => {
           ) : null}
           <CardContent sx={{ flexGrow: 1, pb: 1 }}>
             <Typography variant="subtitle1" sx={{ 
-              fontWeight: 600,
-              color: 'primary.main',
+              fontWeight: 700,
+              background: 'linear-gradient(45deg, #6366f1 30%, #ec4899 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
               mb: 1,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -704,13 +799,22 @@ const Resource = () => {
                     <IconButton
                       size="small"
                       color="primary"
-                      href={material.file_url}
-                      target="_blank"
+                      onClick={() => handleDownload(material.file_url)}
                     >
                       <DownloadIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 )}
+
+                <Tooltip title="Ask AI">
+                  <IconButton
+                    size="small"
+                    color={openChatId === material.id ? "primary" : "default"}
+                    onClick={() => handleToggleChat(material.id)}
+                  >
+                    <BotIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
 
                 <Tooltip title="Delete">
                   <IconButton
@@ -728,6 +832,105 @@ const Resource = () => {
               </Box>
             </Box>
           </CardActions>
+          {openChatId === material.id && (
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(248, 250, 252, 0.8)', 
+              backdropFilter: 'blur(10px)',
+              borderTop: '1px solid', 
+              borderColor: 'divider',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px'
+            }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, color: 'text.primary', fontWeight: 600 }}>
+                <BotIcon color="primary" fontSize="small" /> Ask Platform AI
+              </Typography>
+              <Box className="chat-scroll" sx={{ maxHeight: 250, overflowY: 'auto', mb: 2, display: 'flex', flexDirection: 'column', gap: 1.5, px: 1 }}>
+                {(chatMessages[material.id] || []).map((msg, index) => (
+                  <Box key={index} sx={{
+                    alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                    maxWidth: '85%',
+                    background: msg.sender === 'user' 
+                      ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' 
+                      : (theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)'),
+                    backdropFilter: msg.sender === 'user' ? 'none' : 'blur(8px)',
+                    color: msg.sender === 'user' ? 'white' : 'text.primary',
+                    p: 1.5,
+                    borderRadius: msg.sender === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                    boxShadow: msg.sender === 'user' 
+                      ? '0 4px 15px rgba(99, 102, 241, 0.3)' 
+                      : '0 4px 15px rgba(0, 0, 0, 0.05)',
+                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <Typography variant="body2" sx={{ lineHeight: 1.5 }}>{msg.text}</Typography>
+                  </Box>
+                ))}
+                {isChatLoading && (
+                  <Box sx={{ 
+                    alignSelf: 'flex-start', 
+                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)', 
+                    backdropFilter: 'blur(8px)',
+                    p: 1.5, 
+                    borderRadius: '20px 20px 20px 4px', 
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <span className="typing-dot">.</span><span className="typing-dot">.</span><span className="typing-dot">.</span>
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Ask a question..."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSendChat(material.id);
+                    }
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '24px',
+                      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.7)',
+                      '& fieldset': {
+                        borderColor: 'transparent',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'primary.light',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'primary.main',
+                      }
+                    }
+                  }}
+                />
+                <IconButton 
+                  color="primary" 
+                  onClick={() => handleSendChat(material.id)} 
+                  disabled={isChatLoading || !chatInput.trim()}
+                  sx={{
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: 'action.disabledBackground',
+                      color: 'action.disabled',
+                    }
+                  }}
+                >
+                  <SendIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+          )}
         </Card>
       </motion.div>
     );

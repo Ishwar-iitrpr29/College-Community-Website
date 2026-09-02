@@ -424,41 +424,16 @@ const TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
 
 const teamMembers = [
   {
-    name: "Jatin",
-    rollNumber: "2022MCB1266",
-    role: "Frontend Developer",
-    contributions: "Designed user interfaces and improved user experience. Worked on making the website fully responsive and interactive.",
-    avatar: require("./Jatin.jpeg"),
+    name: "Ishwar",
+    rollNumber: "",
+    role: "Full Stack Developer",
+    contributions: "Project Design and Development.",
+    avatar: require("./Ishwar.png"),
     social: {
-      linkedin: "https://linkedin.com/in/jatin",
-      twitter: "https://twitter.com/jatin",
-      github: "https://github.com/jatin"
+      linkedin: "https://www.linkedin.com/in/ishwar-amle-3a6a29294/",
+      github: "https://github.com/Ishwar-iitrpr29"
     }
-  },
-  {
-    name: "Jitender",
-    rollNumber: "2022MCB1318",
-    role: "Backend Developer",
-    contributions: "Developed core functionalities and backend API. Implemented authentication and RESTful services.",
-    avatar: require("./Jitender.jpeg"),
-    social: {
-      linkedin: "https://linkedin.com/in/jitender",
-      twitter: "https://twitter.com/jitender",
-      github: "https://github.com/jitender"
-    }
-  },
-  {
-    name: "Sarthak",
-    rollNumber: "2022MCB1278",
-    role: "Database Manager",
-    contributions: "Handled database management and cloud storage integration. Optimized queries and ensured data security.",
-    avatar: require("./Sarthak.jpeg"),
-    social: {
-      linkedin: "https://linkedin.com/in/sarthak",
-      twitter: "https://twitter.com/sarthak",
-      github: "https://github.com/sarthak"
-    }
-  },
+  }
 ];
 
 const Contact = () => {
@@ -480,9 +455,9 @@ const Contact = () => {
 
   useEffect(() => {
     // Check if EmailJS is properly configured
-    if (!process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 
-        !process.env.REACT_APP_EMAILJS_SERVICE_ID || 
-        !process.env.REACT_APP_EMAILJS_TEMPLATE_ID) {
+    if (!process.env.REACT_APP_EMAILJS_PUBLIC_KEY ||
+      !process.env.REACT_APP_EMAILJS_SERVICE_ID ||
+      !process.env.REACT_APP_EMAILJS_TEMPLATE_ID) {
       setSnackbar({
         open: true,
         message: 'Email service not configured. Please contact the administrator.',
@@ -503,7 +478,7 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!emailConfigured) {
       setSnackbar({
         open: true,
@@ -565,13 +540,13 @@ const Contact = () => {
     {
       icon: <EmailIcon sx={{ fontSize: 40 }} />,
       title: 'Email',
-      details: ['depplatfrom@gmail.com'],
+      details: ['ishwar.iitrpr@gmail.com'],
       color: '#5C6BC0',
     },
     {
       icon: <PhoneIcon sx={{ fontSize: 40 }} />,
       title: 'Phone',
-      details: ['+91 1234567890', 'Mon-Fri: 9:00 AM - 6:00 PM'],
+      details: ['+91 7385107084', 'Mon-Fri: 9:00 AM - 6:00 PM'],
       color: '#7C4DFF',
     },
     {
@@ -586,33 +561,27 @@ const Contact = () => {
     {
       icon: <LinkedInIcon />,
       label: 'LinkedIn',
-      url: 'https://linkedin.com/company/college-community',
+      url: 'https://www.linkedin.com/in/ishwar-amle-3a6a29294/',
       color: '#0077B5',
-    },
-    {
-      icon: <TwitterIcon />,
-      label: 'Twitter',
-      url: 'https://twitter.com/collegecommunity',
-      color: '#1DA1F2',
     },
     {
       icon: <GitHubIcon />,
       label: 'GitHub',
-      url: 'https://github.com/college-community',
+      url: 'https://github.com/Ishwar-iitrpr29',
       color: theme.palette.mode === 'dark' ? '#fff' : '#333',
     },
   ];
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
+    <Box sx={{
+      minHeight: '100vh',
       bgcolor: 'background.default',
-      background: theme.palette.mode === 'dark' 
+      background: theme.palette.mode === 'dark'
         ? 'linear-gradient(180deg, #121212 0%, #1E1E1E 100%)'
         : 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)',
     }}>
       <PageHeader />
-      
+
       {/* Hero Section */}
       <Box
         sx={{
@@ -650,7 +619,7 @@ const Contact = () => {
             component="h1"
             gutterBottom
             align="center"
-            sx={{ 
+            sx={{
               fontWeight: 900,
               fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
               background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
@@ -666,9 +635,9 @@ const Contact = () => {
           <Typography
             variant="h5"
             align="center"
-            sx={{ 
-              maxWidth: 800, 
-              mx: 'auto', 
+            sx={{
+              maxWidth: 800,
+              mx: 'auto',
               opacity: 0.9,
               fontWeight: 400,
               letterSpacing: '0.5px',
@@ -688,7 +657,7 @@ const Contact = () => {
             component="h2"
             gutterBottom
             align="center"
-            sx={{ 
+            sx={{
               mb: 4,
               fontWeight: 800,
               background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
@@ -877,7 +846,7 @@ const Contact = () => {
                       variant="h6"
                       component="h3"
                       gutterBottom
-                      sx={{ 
+                      sx={{
                         fontWeight: 700,
                         mb: 2,
                       }}
@@ -889,7 +858,7 @@ const Contact = () => {
                         key={idx}
                         variant="body2"
                         color="text.secondary"
-                        sx={{ 
+                        sx={{
                           mb: 1,
                           lineHeight: 1.6,
                         }}
@@ -927,8 +896,8 @@ const Contact = () => {
               variant="h3"
               component="h2"
               gutterBottom
-              sx={{ 
-                fontWeight: 800, 
+              sx={{
+                fontWeight: 800,
                 mb: 4,
                 textAlign: 'center',
                 background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
