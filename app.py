@@ -3549,10 +3549,10 @@ def send_otp_email(email, otp):
         )
         mail.send(msg)
         print(f"Successfully sent OTP email to {email}")  # Add logging
-        return True
+        return True, None
     except Exception as e:
         print(f"Error sending email: {str(e)}")  # Add error logging
-        return False
+        return False, str(e)
 
 @app.route('/generate-otp', methods=['POST'])
 def generate_otp():
@@ -3636,7 +3636,7 @@ def generate_otp():
             print(f"Error sending email: {str(e)}")
             return jsonify({
                 'error': 'Email error',
-                'message': 'Failed to send verification code. Please try again.'
+                'message': f'Failed to send verification code. Error: {str(e)}'
             }), 500
 
         return jsonify({
