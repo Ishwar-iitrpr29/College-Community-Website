@@ -22,3 +22,4 @@ pinecone
 PyPDF2
 gunicorn==21.2.0
 psycopg[binary]
+Flask-Mail==0.10.0
