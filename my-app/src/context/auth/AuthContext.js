@@ -13,7 +13,7 @@
 //     const token = localStorage.getItem('token');
 //     if (token) {
 //       // Verify token with backend
-//       axios.get('http://localhost:5000/verify-token', {
+//       axios.get(`${process.env.REACT_APP_API_URL}/verify-token`, {
 //         headers: { Authorization: `Bearer ${token}` }
 //       })
 //       .then(response => {
@@ -35,7 +35,7 @@
 
 //   const login = async (username, password) => {
 //     try {
-//       const response = await axios.post('http://localhost:5000/login', {
+//       const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, {
 //         username,
 //         password
 //       });
@@ -84,7 +84,7 @@
 //     try {
 //       console.log("AuthContext signup called with:", { username, email, password });
       
-//       const response = await axios.post('http://localhost:5000/signup', {
+//       const response = await axios.post(`${process.env.REACT_APP_API_URL}/signup`, {
 //         username,
 //         email,
 //         password
@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/verify-token", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-token`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -204,7 +204,7 @@ export const AuthProvider = ({ children }) => {
 
       if (otp) {
         // OTP-based login
-        response = await fetch("http://localhost:5000/verify-otp", {
+        response = await fetch(`${process.env.REACT_APP_API_URL}/verify-otp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -217,7 +217,7 @@ export const AuthProvider = ({ children }) => {
         })
       } else {
         // Password-based login
-        response = await fetch("http://localhost:5000/login", {
+        response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -257,7 +257,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (username, email, password) => {
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

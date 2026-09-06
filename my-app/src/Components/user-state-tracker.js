@@ -22,7 +22,7 @@ const USER_STATES = {
   // Function to log user state transition
   const logStateTransition = async (userId, fromState, toState, action) => {
     try {
-      const response = await fetch("http://localhost:5000/api/log-state-transition", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/log-state-transition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const USER_STATES = {
   const trackUserAction = async (userId, action, context = {}) => {
     try {
       // Get current user state
-      const stateResponse = await fetch(`http://localhost:5000/api/user-state?userId=${userId}`, {
+      const stateResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/user-state?userId=${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

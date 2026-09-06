@@ -78,7 +78,12 @@ def get_latest_updates():
         updates = []
         
         # 1. Get recent group messages
-        from models import ClassroomMessage, ClassroomMembership, Classroom, User
+        import sys
+        app_module = sys.modules.get('__main__') or sys.modules.get('app')
+        ClassroomMessage = app_module.ClassroomMessage
+        ClassroomMembership = app_module.ClassroomMembership
+        Classroom = app_module.Classroom
+        User = app_module.User
         
         # Get classrooms the user is a member of
         user_memberships = ClassroomMembership.query.filter_by(user_id=current_user).all()
@@ -118,7 +123,7 @@ def get_latest_updates():
             })
         
         # 2. Get recent material uploads
-        from models import Upload
+        Upload = app_module.Upload
         
         recent_uploads = Upload.query.order_by(
             Upload.created_at.desc()
@@ -138,7 +143,7 @@ def get_latest_updates():
             })
         
         # 3. Get recent placement data
-        from models import Placement
+        Placement = app_module.Placement
         
         recent_placements = Placement.query.order_by(
             Placement.created_at.desc()
@@ -158,7 +163,7 @@ def get_latest_updates():
             })
         
         # 4. Get recent interview experiences
-        from models import InterviewExperience
+        InterviewExperience = app_module.InterviewExperience
         
         recent_interviews = InterviewExperience.query.order_by(
             InterviewExperience.created_at.desc()

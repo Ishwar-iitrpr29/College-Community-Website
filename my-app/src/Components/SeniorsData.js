@@ -519,7 +519,7 @@ const SeniorsData = () => {
         throw new Error("Authentication required")
       }
 
-      const response = await fetch(`http://localhost:5000/placements${queryString}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/placements${queryString}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -633,7 +633,7 @@ const SeniorsData = () => {
         }
       })
 
-      const response = await fetch("http://localhost:5000/placements", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/placements`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -696,7 +696,7 @@ const SeniorsData = () => {
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-          <IconButton onClick={() => navigate("http://localhost:5000/internships-placements")}>
+          <IconButton onClick={() => navigate(`${process.env.REACT_APP_API_URL}/internships-placements`)}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h4" component="h1" fontWeight="bold">

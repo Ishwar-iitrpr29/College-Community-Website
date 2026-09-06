@@ -20,3 +20,5 @@ numpy
 google-generativeai
 pinecone
 PyPDF2
+gunicorn==21.2.0
+psycopg[binary]

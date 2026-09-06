@@ -100,7 +100,7 @@
 //         setLoading(true);
 //         try {
 //             console.log('Attempting password login for email:', formData.email);
-//             const response = await fetch('http://localhost:5000/login', {
+//             const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({
@@ -137,20 +137,20 @@
 
 //     const handleGenerateOTP = async () => {
 //         if (!validateEmail()) return;
-        
+
 //         setLoading(true);
 //         setMessage('');
 //         setErrors({});
-        
+
 //         try {
-//             const response = await fetch('http://localhost:5000/generate-otp', {
+//             const response = await fetch(`${process.env.REACT_APP_API_URL}/generate-otp`, {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({ email: formData.email })
 //             });
-            
+
 //             const data = await response.json();
-            
+
 //             if (response.ok) {
 //                 toast.success('OTP has been sent to your email');
 //                 setMessage('OTP has been sent to your email. Please check your inbox. The OTP is valid for 5 minutes.');
@@ -188,7 +188,7 @@
 //         setLoading(true);
 //         try {
 //             console.log('Verifying OTP for email:', formData.email);
-//             const response = await fetch('http://localhost:5000/verify-otp', {
+//             const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-otp`, {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({
@@ -222,10 +222,10 @@
 //                     const errorMessage = data.attempts_left !== undefined 
 //                         ? `${data.error} (${data.attempts_left} attempts left)`
 //                         : data.error;
-                    
+
 //                     toast.error(errorMessage);
 //                     setErrors(prev => ({ ...prev, otp: errorMessage }));
-                    
+
 //                     if (data.retry_after) {
 //                         setCountdown(Math.ceil(data.retry_after));
 //                     }
@@ -257,7 +257,7 @@
 //                     <Typography component="h1" variant="h5" gutterBottom>
 //                         Login to DEP
 //                     </Typography>
-                    
+
 //                     <ToggleButtonGroup
 //                         value={authMethod}
 //                         exclusive
@@ -272,7 +272,7 @@
 //                             Password Login
 //                         </ToggleButton>
 //                     </ToggleButtonGroup>
-                    
+
 //                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
 //                         <TextField
 //                             margin="normal"
@@ -293,7 +293,7 @@
 //                             placeholder="username@iitrpr.ac.in"
 //                             disabled={loading}
 //                         />
-                        
+
 //                         {authMethod === 'password' && (
 //                             <TextField
 //                                 margin="normal"
@@ -327,7 +327,7 @@
 //                                 }}
 //                             />
 //                         )}
-                        
+
 //                         {authMethod === 'otp' && otpRequired && (
 //                             <TextField
 //                                 margin="normal"
@@ -348,19 +348,19 @@
 //                                 inputProps={{ maxLength: 6 }}
 //                             />
 //                         )}
-                        
+
 //                         {errors.submit && (
 //                             <Alert severity="error" sx={{ mt: 2 }}>
 //                                 {errors.submit}
 //                             </Alert>
 //                         )}
-                        
+
 //                         {message && (
 //                             <Alert severity="success" sx={{ mt: 2 }}>
 //                                 {message}
 //                             </Alert>
 //                         )}
-                        
+
 //                         <Button
 //                             type="submit"
 //                             fullWidth
@@ -376,7 +376,7 @@
 //                                     : 'Login'
 //                             )}
 //                         </Button>
-                        
+
 //                         {authMethod === 'otp' && otpRequired && (
 //                             <Button
 //                                 fullWidth
@@ -394,7 +394,7 @@
 //                                 )}
 //                             </Button>
 //                         )}
-                        
+
 //                         <Grid container justifyContent="space-between">
 //                             <Grid item>
 //                                 <Link
@@ -509,7 +509,7 @@ const Login = () => {
     setLoading(true)
     try {
       // First check if the account exists
-      const checkResponse = await fetch("http://localhost:5000/login", {
+      const checkResponse = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -533,7 +533,7 @@ const Login = () => {
       }
 
       // If account exists, proceed with OTP generation
-      const response = await fetch("http://localhost:5000/generate-otp", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/generate-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -623,35 +623,96 @@ const Login = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          mt: 8,
-          backgroundColor: "rgb(32, 33, 35)",
-          color: "white",
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <Typography component="h1" variant="h5" gutterBottom>
-            Login to DEP
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      {/* LEFT SIDE - BRANDING */}
+      <Box sx={{
+        flex: 1,
+        display: { xs: 'none', md: 'flex' },
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+        color: 'white',
+        p: 6,
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Abstract background shapes */}
+        <Box sx={{
+          position: 'absolute',
+          top: '-10%',
+          right: '-10%',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)',
+        }} />
+        <Box sx={{
+          position: 'absolute',
+          bottom: '-20%',
+          left: '-10%',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)',
+        }} />
+
+        <Box sx={{ zIndex: 1, textAlign: 'center', maxWidth: 500 }}>
+          <Typography variant="h2" component="h1" sx={{ fontWeight: 900, mb: 2, letterSpacing: '-1px' }}>
+            College Community Platform
           </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 400, opacity: 0.9, lineHeight: 1.6 }}>
+            Empowering college communities to connect, learn, and grow together. Discover jobs, connect with peers, and prepare for your future.
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* RIGHT SIDE - LOGIN FORM */}
+      <Box sx={{
+        flex: { xs: 1, md: 0.8, lg: 0.6 },
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        p: { xs: 3, sm: 6, md: 8 },
+        bgcolor: '#f8fafc'
+      }}>
+        <Paper elevation={0} sx={{
+          width: '100%',
+          maxWidth: 420,
+          p: 4,
+          borderRadius: 3,
+          bgcolor: 'white',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+        }}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
+            <Typography component="h1" variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+              Welcome Back
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#64748b' }}>
+              Login to access your dashboard
+            </Typography>
+          </Box>
 
           <Tabs
             value={authMethod}
             onChange={handleTabChange}
             variant="fullWidth"
             sx={{
-              mb: 3,
+              mb: 4,
               width: "100%",
               "& .MuiTabs-indicator": {
-                backgroundColor: "#7c3aed",
+                backgroundColor: "#0ea5e9",
+                height: 3,
+                borderRadius: '3px 3px 0 0'
               },
               "& .MuiTab-root": {
-                color: "rgb(138, 143, 150)",
+                color: "#64748b",
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '1rem',
                 "&.Mui-selected": {
-                  color: "white",
+                  color: "#0ea5e9",
                 },
               },
             }}
@@ -661,7 +722,7 @@ const Login = () => {
           </Tabs>
 
           {serverError && (
-            <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
               {serverError}
             </Alert>
           )}
@@ -685,21 +746,16 @@ const Login = () => {
               helperText={errors.email || "Use your @iitrpr.ac.in email address"}
               disabled={loading || (authMethod === 0 && otpSent)}
               sx={{
+                mb: 2,
                 "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": {
-                    borderColor: "rgb(95, 99, 104)",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "rgb(138, 143, 150)",
-                  },
+                  borderRadius: 2,
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#0ea5e9",
+                  }
                 },
-                "& .MuiInputLabel-root": {
-                  color: "rgb(138, 143, 150)",
-                },
-                "& .MuiFormHelperText-root": {
-                  color: errors.email ? "error.main" : "rgb(138, 143, 150)",
-                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#0ea5e9",
+                }
               }}
             />
 
@@ -729,7 +785,6 @@ const Login = () => {
                         aria-label="toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
-                        sx={{ color: "rgb(138, 143, 150)" }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -737,21 +792,16 @@ const Login = () => {
                   ),
                 }}
                 sx={{
+                  mb: 2,
                   "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": {
-                      borderColor: "rgb(95, 99, 104)",
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "rgb(138, 143, 150)",
-                    },
+                    borderRadius: 2,
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#0ea5e9",
+                    }
                   },
-                  "& .MuiInputLabel-root": {
-                    color: "rgb(138, 143, 150)",
-                  },
-                  "& .MuiFormHelperText-root": {
-                    color: errors.password ? "error.main" : "rgb(138, 143, 150)",
-                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#0ea5e9",
+                  }
                 }}
               />
             )}
@@ -776,21 +826,16 @@ const Login = () => {
                 disabled={loading}
                 inputProps={{ maxLength: 6 }}
                 sx={{
+                  mb: 2,
                   "& .MuiOutlinedInput-root": {
-                    color: "white",
-                    "& fieldset": {
-                      borderColor: "rgb(95, 99, 104)",
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "rgb(138, 143, 150)",
-                    },
+                    borderRadius: 2,
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#0ea5e9",
+                    }
                   },
-                  "& .MuiInputLabel-root": {
-                    color: "rgb(138, 143, 150)",
-                  },
-                  "& .MuiFormHelperText-root": {
-                    color: errors.otp ? "error.main" : "rgb(138, 143, 150)",
-                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#0ea5e9",
+                  }
                 }}
               />
             )}
@@ -801,14 +846,18 @@ const Login = () => {
               variant="contained"
               disabled={loading}
               sx={{
-                mt: 3,
+                mt: 2,
                 mb: 2,
-                bgcolor: "#7c3aed",
+                py: 1.5,
+                bgcolor: "#0ea5e9",
+                borderRadius: 2,
+                textTransform: 'none',
+                fontSize: '1rem',
+                fontWeight: 600,
+                boxShadow: '0 4px 14px 0 rgba(14, 165, 233, 0.39)',
                 "&:hover": {
-                  bgcolor: "#6d28d9",
-                },
-                "&:disabled": {
-                  bgcolor: "rgba(124, 58, 237, 0.5)",
+                  bgcolor: "#0284c7",
+                  boxShadow: '0 6px 20px rgba(14, 165, 233, 0.23)',
                 },
               }}
             >
@@ -833,15 +882,17 @@ const Login = () => {
                 disabled={loading || resendDisabled}
                 sx={{
                   mb: 2,
-                  borderColor: "rgb(95, 99, 104)",
-                  color: "white",
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderColor: "#cbd5e1",
+                  color: "#475569",
                   "&:hover": {
-                    borderColor: "rgb(138, 143, 150)",
-                    backgroundColor: "rgba(124, 58, 237, 0.1)",
-                  },
-                  "&:disabled": {
-                    color: "rgba(255, 255, 255, 0.3)",
-                    borderColor: "rgba(95, 99, 104, 0.5)",
+                    borderColor: "#0ea5e9",
+                    bgcolor: "rgba(14, 165, 233, 0.05)",
+                    color: "#0ea5e9"
                   },
                 }}
               >
@@ -854,14 +905,16 @@ const Login = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mt: 2,
+                mt: 3,
               }}
             >
               <Link
                 to="/signup"
                 style={{
-                  color: "#7c3aed",
+                  color: "#0ea5e9",
                   textDecoration: "none",
+                  fontWeight: 500,
+                  fontSize: '0.9rem'
                 }}
               >
                 Don't have an account? Sign Up
@@ -871,8 +924,10 @@ const Login = () => {
                 <Link
                   to="/reset-password"
                   style={{
-                    color: "#7c3aed",
+                    color: "#0ea5e9",
                     textDecoration: "none",
+                    fontWeight: 500,
+                    fontSize: '0.9rem'
                   }}
                 >
                   Forgot Password?
@@ -880,9 +935,9 @@ const Login = () => {
               )}
             </Box>
           </Box>
-        </Box>
-      </Paper>
-    </Container>
+        </Paper>
+      </Box>
+    </Box>
   )
 }
 

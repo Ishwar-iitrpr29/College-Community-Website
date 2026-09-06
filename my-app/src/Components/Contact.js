@@ -597,8 +597,8 @@ const Contact = () => {
             right: 0,
             bottom: 0,
             background: theme.palette.mode === 'dark'
-              ? 'linear-gradient(45deg, rgba(92, 107, 192, 0.1) 0%, rgba(124, 77, 255, 0.1) 100%)'
-              : 'linear-gradient(45deg, rgba(92, 107, 192, 0.05) 0%, rgba(124, 77, 255, 0.05) 100%)',
+              ? 'linear-gradient(45deg, rgba(14, 165, 233, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%)'
+              : 'linear-gradient(45deg, rgba(14, 165, 233, 0.05) 0%, rgba(56, 189, 248, 0.05) 100%)',
             zIndex: 0,
           },
           '&::after': {
@@ -622,7 +622,7 @@ const Contact = () => {
             sx={{
               fontWeight: 900,
               fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
-              background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
+              background: 'linear-gradient(45deg, #0ea5e9 30%, #38bdf8 90%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               textShadow: '0 2px 10px rgba(0,0,0,0.1)',
@@ -660,17 +660,17 @@ const Contact = () => {
             sx={{
               mb: 4,
               fontWeight: 800,
-              background: 'linear-gradient(45deg, #5C6BC0 30%, #7C4DFF 90%)',
+              background: 'linear-gradient(45deg, #0ea5e9 30%, #38bdf8 90%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '-0.5px',
             }}
           >
-            Our Team
+            Developer Profile
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} justifyContent="center">
             {teamMembers.map((member, index) => (
-              <Grid item xs={12} sm={4} key={index}>
+              <Grid item xs={12} sm={8} md={6} lg={4} key={index}>
                 <Zoom in timeout={1000} style={{ transitionDelay: `${index * 100}ms` }}>
                   <Card
                     sx={{

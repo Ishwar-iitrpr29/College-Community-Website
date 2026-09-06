@@ -687,7 +687,7 @@ const InterviewExperiences = () => {
         throw new Error("Authentication required")
       }
 
-      const response = await fetch(`http://localhost:5000/interview-experiences${queryString}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/interview-experiences${queryString}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -734,7 +734,7 @@ const InterviewExperiences = () => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch("http://localhost:5000/api/chat", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -843,7 +843,7 @@ const InterviewExperiences = () => {
         throw new Error("Authentication required")
       }
 
-      const response = await fetch("http://localhost:5000/interview-experiences", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/interview-experiences`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -912,7 +912,7 @@ const InterviewExperiences = () => {
         throw new Error("Authentication required")
       }
 
-      const response = await fetch(`http://localhost:5000/interview-experiences/${interviewId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/interview-experiences/${interviewId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -955,7 +955,7 @@ const InterviewExperiences = () => {
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-          <IconButton onClick={() => navigate("http://localhost:5000/internships-placements")}>
+          <IconButton onClick={() => navigate(`${process.env.REACT_APP_API_URL}/internships-placements`)}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h4" component="h1" fontWeight="bold">

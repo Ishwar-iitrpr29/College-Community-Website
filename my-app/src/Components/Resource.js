@@ -232,7 +232,7 @@ const Resource = () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get('http://localhost:5000/recent-uploads', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/recent-uploads`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMaterials(response.data.materials);
@@ -283,7 +283,7 @@ const Resource = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -417,7 +417,7 @@ const Resource = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:5000/uploads',
+        `${process.env.REACT_APP_API_URL}/uploads`,
         formData,
         {
           headers: {
@@ -458,7 +458,7 @@ const Resource = () => {
       // If clicking the same vote type, remove the vote
       if (currentVote === voteType) {
         const response = await axios.post(
-          `http://localhost:5000/uploads/${materialId}/vote`,
+          `${process.env.REACT_APP_API_URL}/uploads/${materialId}/vote`,
           { type: 'remove' },
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -483,7 +483,7 @@ const Resource = () => {
       } else {
         // If changing vote or voting for the first time
         const response = await axios.post(
-          `http://localhost:5000/uploads/${materialId}/vote`,
+          `${process.env.REACT_APP_API_URL}/uploads/${materialId}/vote`,
           { 
             type: voteType,
             previous_vote: currentVote // Send the previous vote to backend
@@ -555,7 +555,7 @@ const Resource = () => {
     setIsLoadingComments(true);
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get(`http://localhost:5000/uploads/${materialId}/comments`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/uploads/${materialId}/comments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setComments(response.data.comments);
@@ -573,7 +573,7 @@ const Resource = () => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.post(
-        `http://localhost:5000/uploads/${currentMaterialId}/comments`,
+        `${process.env.REACT_APP_API_URL}/uploads/${currentMaterialId}/comments`,
         { text: commentText },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -612,7 +612,7 @@ const Resource = () => {
   const handleDelete = async (materialId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/uploads/${materialId}`,
+        `${process.env.REACT_APP_API_URL}/uploads/${materialId}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -994,7 +994,7 @@ const Resource = () => {
       if (searchSemester) params.append('semester', searchSemester);
       searchTags.forEach(tag => params.append('tags', tag));
 
-      const response = await axios.get(`http://localhost:5000/search?${params.toString()}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/search?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

@@ -67,7 +67,7 @@ const ProfileNew = () => {
         return
       }
 
-      const response = await fetch("http://localhost:5000/profile", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -107,7 +107,7 @@ const ProfileNew = () => {
         return
       }
 
-      const response = await fetch("http://localhost:5000/user-stats", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user-stats`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -164,7 +164,7 @@ const ProfileNew = () => {
         return
       }
 
-      const response = await fetch("http://localhost:5000/update-profile", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -221,7 +221,7 @@ const ProfileNew = () => {
     formData.append("file", file)
 
     try {
-      const response = await fetch("http://localhost:5000/upload-profile-picture", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload-profile-picture`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -95,7 +95,7 @@
 //       });
       
 //       // Use fetch directly instead of the auth context's signup function
-//       const response = await fetch('http://localhost:5000/signup', {
+//       const response = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -487,7 +487,7 @@ export default function Signup() {
   const handleSendOTP = async () => {
     try {
       setLoading(true)
-      const response = await fetch("http://localhost:5000/generate-otp", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/generate-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -523,7 +523,7 @@ export default function Signup() {
     if (!resendDisabled) {
       try {
         setLoading(true)
-        const response = await fetch("http://localhost:5000/generate-otp", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/generate-otp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -573,7 +573,7 @@ export default function Signup() {
 
     if (activeStep === 0) {
         // First step: Check credentials and send OTP
-        const checkResponse = await fetch("http://localhost:5000/check-credentials", {
+        const checkResponse = await fetch(`${process.env.REACT_APP_API_URL}/check-credentials`, {
           method: "POST",
                 headers: {
             "Content-Type": "application/json",
@@ -599,7 +599,7 @@ export default function Signup() {
         }
 
         // If credentials are unique, send OTP
-        const otpResponse = await fetch("http://localhost:5000/generate-otp", {
+        const otpResponse = await fetch(`${process.env.REACT_APP_API_URL}/generate-otp`, {
           method: "POST",
                 headers: {
             "Content-Type": "application/json",
@@ -649,7 +649,7 @@ export default function Signup() {
         })
 
         // First verify the OTP
-        const verifyResponse = await fetch("http://localhost:5000/verify-otp", {
+        const verifyResponse = await fetch(`${process.env.REACT_APP_API_URL}/verify-otp`, {
           method: "POST",
                 headers: {
             "Content-Type": "application/json",
@@ -695,7 +695,7 @@ export default function Signup() {
         // If OTP verification is successful, create the account
         try {
           console.log("Creating account after successful verification")
-          const signupResponse = await fetch("http://localhost:5000/signup", {
+          const signupResponse = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
             method: "POST",
                     headers: {
               "Content-Type": "application/json",

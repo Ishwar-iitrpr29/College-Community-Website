@@ -91,7 +91,7 @@
 
 //         setLoading(true);
 //         try {
-//             const response = await fetch('http://localhost:5000/request-password-reset', {
+//             const response = await fetch(`${process.env.REACT_APP_API_URL}/request-password-reset`, {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({ email: formData.email })
@@ -125,7 +125,7 @@
 
 //         setLoading(true);
 //         try {
-//             const response = await fetch('http://localhost:5000/verify-reset-otp', {
+//             const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-reset-otp`, {
 //                 method: 'POST',
 //                 headers: { 'Content-Type': 'application/json' },
 //                 body: JSON.stringify({
@@ -499,7 +499,7 @@ const ResetPassword = () => {
     try {
       console.log("Checking if account exists...")
       // First check if the account exists
-      const checkResponse = await fetch("http://localhost:5000/login", {
+      const checkResponse = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -524,7 +524,7 @@ const ResetPassword = () => {
       }
 
       console.log("Requesting password reset OTP...")
-      const response = await fetch("http://localhost:5000/request-password-reset", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/request-password-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email }),
@@ -576,7 +576,7 @@ const ResetPassword = () => {
         verify_only: false
       })
       
-      const response = await fetch("http://localhost:5000/verify-reset-otp", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-reset-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -633,7 +633,7 @@ const ResetPassword = () => {
     setLoading(true)
     try {
       console.log("Proceeding with password reset...")
-      const response = await fetch("http://localhost:5000/reset-password", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -676,7 +676,7 @@ const ResetPassword = () => {
 
     setLoading(true)
     try {
-      const response = await fetch("http://localhost:5000/request-password-reset", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/request-password-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email }),

@@ -54,7 +54,7 @@ const DiscussionPage = () => {
     const fetchClassrooms = async () => {
       try {
         const token = localStorage.getItem("token")
-        const response = await fetch("http://localhost:5000/api/classrooms", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/classrooms`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +82,7 @@ const DiscussionPage = () => {
       const fetchMessages = async () => {
         try {
           const token = localStorage.getItem("token")
-          const response = await fetch(`http://localhost:5000/api/classroom/${selectedClassroom.id}/messages`, {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/classroom/${selectedClassroom.id}/messages`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -122,7 +122,7 @@ const DiscussionPage = () => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`http://localhost:5000/api/classroom/${selectedClassroom.id}/message`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/classroom/${selectedClassroom.id}/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +149,7 @@ const DiscussionPage = () => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch("http://localhost:5000/api/classroom/create", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/classroom/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +180,7 @@ const DiscussionPage = () => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch("http://localhost:5000/api/classroom/join", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/classroom/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

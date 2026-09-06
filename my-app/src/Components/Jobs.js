@@ -21,7 +21,7 @@
 //         if (value) queryParams.append(key, value);
 //       });
 
-//       const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+//       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?${queryParams}`);
 
 //       if (!response.ok) {
 //         throw new Error(`Error: ${response.status}`);
@@ -107,7 +107,7 @@
 //         if (value) queryParams.append(key, value);
 //       });
 
-//       const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+//       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?${queryParams}`);
 
 //       if (!response.ok) {
 //         throw new Error(`Error: ${response.status}`);
@@ -282,7 +282,7 @@ function Jobs() {
         if (value) queryParams.append(key, value);
       });
 
-      const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?${queryParams}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
@@ -375,7 +375,7 @@ function Jobs() {
       });
       queryParams.append('page', 1);
 
-      const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?${queryParams}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
@@ -403,7 +403,7 @@ function Jobs() {
       });
       queryParams.append('page', nextPage);
 
-      const response = await fetch(`http://localhost:5000/api/jobs?${queryParams}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?${queryParams}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);

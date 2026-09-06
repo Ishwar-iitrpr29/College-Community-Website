@@ -64,7 +64,7 @@
 //   useEffect(() => {
 //     const fetchStats = async () => {
 //       try {
-//         const response = await fetch("http://localhost:5000/user-stats", {
+//         const response = await fetch(`${process.env.REACT_APP_API_URL}/user-stats`, {
 //           headers: {
 //             Authorization: `Bearer ${localStorage.getItem("token")}`,
 //           },
@@ -88,7 +88,7 @@
 //       setLoading(true)
 
 //       // Fetch profile data
-//       const profileResponse = await fetch("http://localhost:5000/profile", {
+//       const profileResponse = await fetch(`${process.env.REACT_APP_API_URL}/profile`, {
 //         headers: {
 //           Authorization: `Bearer ${localStorage.getItem("token")}`,
 //         },
@@ -111,7 +111,7 @@
 //       }
 
 //       // Fetch stats data
-//       const statsResponse = await fetch("http://localhost:5000/user-stats", {
+//       const statsResponse = await fetch(`${process.env.REACT_APP_API_URL}/user-stats`, {
 //         headers: {
 //           Authorization: `Bearer ${localStorage.getItem("token")}`,
 //         },
@@ -164,7 +164,7 @@
 //         console.log(pair[0] + ": " + pair[1])
 //       }
 
-//       const response = await fetch("http://localhost:5000/upload-profile-picture", {
+//       const response = await fetch(`${process.env.REACT_APP_API_URL}/upload-profile-picture`, {
 //         method: "POST",
 //         headers: {
 //           // Do NOT set Content-Type header when using FormData
@@ -213,7 +213,7 @@
 //   const handleSave = async () => {
 //     try {
 //       setSaving(true)
-//       const response = await fetch("http://localhost:5000/update-profile", {
+//       const response = await fetch(`${process.env.REACT_APP_API_URL}/update-profile`, {
 //         method: "PUT",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -636,7 +636,7 @@ const Profile = () => {
       setLoading(true)
 
       // Fetch profile data
-      const profileResponse = await fetch("http://localhost:5000/profile", {
+      const profileResponse = await fetch(`${process.env.REACT_APP_API_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -675,7 +675,7 @@ const Profile = () => {
     if (isUploading) return; // Don't fetch stats during upload
     
     try {
-      const statsResponse = await fetch("http://localhost:5000/user-stats", {
+      const statsResponse = await fetch(`${process.env.REACT_APP_API_URL}/user-stats`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -722,7 +722,7 @@ const Profile = () => {
         console.log(pair[0] + ": " + pair[1])
       }
 
-      const response = await fetch("http://localhost:5000/upload-profile-picture", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload-profile-picture`, {
         method: "POST",
         headers: {
           // Do NOT set Content-Type header when using FormData
@@ -772,7 +772,7 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       setSaving(true)
-      const response = await fetch("http://localhost:5000/update-profile", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

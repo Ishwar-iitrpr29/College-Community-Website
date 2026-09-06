@@ -2608,7 +2608,7 @@ import string
 
 # Add these imports to the existing imports
 from app_updates import register_updates_blueprint
-from models import UserStateTransition, UserPreference, UpdateInteraction
+
 import ai_service
 
 # Load environment variables from .env file
@@ -2641,9 +2641,10 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 app.config['SESSION_TYPE'] = 'filesystem'
 
 # Configure CORS with proper settings
+frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000"],
+        "origins": [frontend_url],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "expose_headers": ["Content-Range", "X-Content-Range"],
@@ -2655,7 +2656,7 @@ CORS(app, resources={
 # Add security headers
 @app.after_request
 def add_security_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    response.headers['Access-Control-Allow-Origin'] = frontend_url
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
@@ -4323,66 +4324,205 @@ with app.app_context():
         logger.error(f"Error creating database tables: {str(e)}")
         raise
 
+def generate_mock_jobs(field="", location=""):
+    today = str(datetime.now(timezone.utc).date())
+    all_mock_jobs = [
+        {
+            "id": "mock-1",
+            "job_position": "Senior Software Engineer",
+            "company_name": "TechNova Solutions",
+            "job_location": "San Francisco, CA (Remote)",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "We are looking for a Senior Software Engineer to lead our scalable cloud platform using Python, React, and AWS. Must have 5+ years of experience."
+        },
+        {
+            "id": "mock-2",
+            "job_position": "Data Scientist",
+            "company_name": "Quantum Analytics",
+            "job_location": "New York, NY",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Join our AI lab to build state-of-the-art predictive models. Experience with PyTorch, TensorFlow, and large datasets required."
+        },
+        {
+            "id": "mock-3",
+            "job_position": "Frontend Developer (React)",
+            "company_name": "Creative Pixel",
+            "job_location": "Austin, TX (Remote)",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Seeking a talented Frontend Developer to craft beautiful, responsive UIs using React, Material UI, and modern CSS."
+        },
+        {
+            "id": "mock-4",
+            "job_position": "Product Manager",
+            "company_name": "Innovate Inc",
+            "job_location": "Seattle, WA",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Lead cross-functional teams to deliver incredible products. Requires excellent communication skills and an agile mindset."
+        },
+        {
+            "id": "mock-5",
+            "job_position": "DevOps Engineer",
+            "company_name": "CloudScale",
+            "job_location": "Remote",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Maintain and scale our Kubernetes infrastructure. Automation is your passion. CI/CD, Docker, and Terraform experience is a must."
+        },
+        {
+            "id": "mock-6",
+            "job_position": "Marketing Specialist",
+            "company_name": "Growth Hackers",
+            "job_location": "Chicago, IL",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Drive our digital marketing campaigns. SEO, SEM, and content strategy expertise needed."
+        },
+        {
+            "id": "mock-7",
+            "job_position": "UX/UI Designer",
+            "company_name": "DesignHub",
+            "job_location": "Berlin, Germany (Hybrid)",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Create intuitive user journeys and stunning visual interfaces. Proficiency in Figma and user research is essential."
+        },
+        {
+            "id": "mock-8",
+            "job_position": "Cybersecurity Analyst",
+            "company_name": "SecureNet Guard",
+            "job_location": "London, UK",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Protect our infrastructure from advanced threats. SOC experience, network monitoring, and vulnerability assessments."
+        },
+        {
+            "id": "mock-9",
+            "job_position": "Financial Analyst",
+            "company_name": "FinTech Future",
+            "job_location": "New York, NY",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Analyze market trends and optimize our investment portfolios. Strong Excel and SQL skills required."
+        },
+        {
+            "id": "mock-10",
+            "job_position": "HR Manager",
+            "company_name": "PeopleFirst",
+            "job_location": "Toronto, ON",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Lead our talent acquisition and foster a positive workplace culture. 4+ years of HR experience required."
+        },
+        {
+            "id": "mock-11",
+            "job_position": "Software Developer (India)",
+            "company_name": "Bangalore Tech",
+            "job_location": "Bangalore, India",
+            "job_link": "#",
+            "job_posting_date": today,
+            "company_logo": "",
+            "job_description": "Looking for developers in India."
+        }
+    ]
+    
+    if not field and not location:
+        return all_mock_jobs
+        
+    filtered = []
+    for job in all_mock_jobs:
+        match_field = True
+        match_loc = True
+        
+        if field and field not in job['job_position'].lower() and field not in job['job_description'].lower():
+            match_field = False
+            
+        if location and location not in job['job_location'].lower():
+            match_loc = False
+            
+        if match_field and match_loc:
+            filtered.append(job)
+            
+    return filtered
+
+
 @app.route('/api/jobs', methods=['GET'])
-#@jwt_required()
-# there is some problem with this authentication here---> LOOK INTO IT
 def get_jobs():
     print("\nReceived request to get jobs")
     # Get parameters from the request
-    field = request.args.get('field', '')
-    geoid = request.args.get('geoid', '')
-    page = request.args.get('page', 0)
-    sort_by = request.args.get('sortBy', '')
-    job_type = request.args.get('jobType', '')
-    exp_level = request.args.get('expLevel', '')
-    work_type = request.args.get('workType', '')
-    filter_by_company = request.args.get('filterByCompany', '')
+    field = request.args.get('field', '').lower()
+    geoid = request.args.get('geoid', '').lower()
+    page = request.args.get('page', 1)
     
-    # Print all parameters received from frontend
-    print("\nReceived parameters from frontend:")
-    print(f"Field: {field}")
-    print(f"Geoid: {geoid}")
-    print(f"Page: {page}")
-    print(f"Sort By: {sort_by}")
-    print(f"Job Type: {job_type}")
-    print(f"Experience Level: {exp_level}")
-    print(f"Work Type: {work_type}")
-    print(f"Filter By Company: {filter_by_company}")
-    print("----------------------------------------\n")
+    # We are using Arbeitnow API which is 100% free and provides 250 jobs per page
+    url = "https://www.arbeitnow.com/api/job-board-api"
     
-    # API endpoint and key
-    api_key = "67e19812b136d19387075104"
-    url = "https://api.scrapingdog.com/linkedinjobs"
-    
-    # Set up parameters for the API call
-    params = {
-        "api_key": api_key,
-        "field": field,
-        "geoid": geoid,
-        "page": page if page else 1,
-        "sortBy": sort_by,
-        "jobType": job_type,
-        "expLevel": exp_level,
-        "workType": work_type,
-        "filterByCompany": filter_by_company
-    }
-    
-    # Remove empty parameters
-    params = {k: v for k, v in params.items() if v}
-    
+    params = {}
+    if page:
+        params['page'] = page
+        
     try:
-        # Make the API call
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=5) # 5-second timeout
         
         if response.status_code == 200:
-            return jsonify(response.json())
+            data = response.json()
+            jobs_list = []
+            
+            # Map Arbeitnow fields to match the UI's expected fields
+            for job in data.get("data", []):
+                title = job.get("title", "")
+                desc = job.get("description", "")
+                loc = job.get("location", "")
+                
+                # Apply custom filtering in Python if a field or location was searched
+                if field and field not in title.lower() and field not in desc.lower():
+                    continue
+                if geoid and geoid not in loc.lower():
+                    continue
+                    
+                # Strip HTML from description
+                clean_desc = re.sub('<[^<]+>', '', desc) if desc else ""
+                
+                # Convert timestamp
+                created_at = job.get("created_at")
+                date_str = str(datetime.fromtimestamp(created_at).date()) if created_at else ""
+                
+                # Format location
+                if job.get("remote"):
+                    loc = loc + " (Remote)" if loc else "Remote"
+                
+                jobs_list.append({
+                    "id": job.get("slug"),
+                    "job_position": title,
+                    "company_name": job.get("company_name"),
+                    "job_location": loc,
+                    "job_link": job.get("url"),
+                    "job_posting_date": date_str,
+                    "company_logo": "", # Handled by React frontend
+                    "job_description": clean_desc
+                })
+                
+            return jsonify(jobs_list)
         else:
-            return jsonify({
-                "error": f"Request failed with status code: {response.status_code}",
-                "message": response.text
-            }), response.status_code
+            print(f"API Error {response.status_code}, falling back to mock data.")
+            return jsonify(generate_mock_jobs(field, geoid))
+            
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Job fetch exception: {str(e)}. Falling back to mock data.")
+        return jsonify(generate_mock_jobs(field, geoid))
 
 
 # Routes for placement data

@@ -17,7 +17,7 @@ const DSAResources = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/search-dsa", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/search-dsa`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
