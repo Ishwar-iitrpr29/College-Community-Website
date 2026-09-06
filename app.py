@@ -2687,7 +2687,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USERNAME', 'depplatfrom@gmail.com')
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASSWORD', 'your_app_password_here')  # Replace with your actual app password
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'depplatfrom@gmail.com')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', os.getenv('EMAIL_USERNAME'))
 
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
