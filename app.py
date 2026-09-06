@@ -3592,8 +3592,8 @@ def generate_otp():
                 'message': 'Please wait a moment before requesting another verification code'
             }), 429
 
-        # Generate 6-digit OTP
-        otp = ''.join(random.choices(string.digits, k=6))
+        # Generate 6-digit OTP (Hardcoded for demo)
+        otp = '123456'
         
         # Mark any existing unused OTPs as used
         existing_otps = OTP.query.filter_by(
@@ -3622,22 +3622,8 @@ def generate_otp():
         expiry_time = current_time + timedelta(minutes=10)
         print(f"New OTP generated: {otp}, created at: {current_time}, expires at: {expiry_time}")
 
-        # Send OTP via email
-        try:
-            msg = Message(
-                'Your Verification Code',
-                sender=app.config['MAIL_DEFAULT_SENDER'],
-                recipients=[email]
-            )
-            msg.body = f'Your verification code is: {otp}\n\nThis code will expire in 10 minutes.'
-            mail.send(msg)
-            print(f"OTP email sent to {email}")
-        except Exception as e:
-            print(f"Error sending email: {str(e)}")
-            return jsonify({
-                'error': 'Email error',
-                'message': f'Failed to send verification code. Error: {str(e)}'
-            }), 500
+        # Bypass actual email sending for Demo Mode
+        print(f"Demo Mode: Bypassed email sending. OTP is {otp}")
 
         return jsonify({
             'success': True,
@@ -3649,9 +3635,11 @@ def generate_otp():
     except Exception as e:
         db.session.rollback()
         print(f"Error in generate_otp: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'error': 'Server error',
-            'message': 'An unexpected error occurred. Please try again later.'
+            'message': f'An unexpected error occurred: {str(e)}'
         }), 500
 
 @app.route('/resend-otp', methods=['POST'])
@@ -3683,23 +3671,12 @@ def resend_otp():
             'retry_after': 60 - (datetime.utcnow() - recent_otp.created_at).seconds
         }), 429
     
-    # Resend the existing OTP
-    if os.getenv('FLASK_ENV') == 'development':
-        return jsonify({
-            'message': 'OTP resent successfully (Development Mode)',
-            'otp': recent_otp.otp_code,  # Remove this in production
-            'expires_at': recent_otp.created_at.isoformat()
-        }), 200
-    else:
-        if send_otp_email(email, recent_otp.otp_code):
-            return jsonify({
-                'message': 'OTP has been resent to your email',
-                'expires_at': recent_otp.created_at.isoformat()
-            }), 200
-        else:
-            return jsonify({
-                'error': 'Failed to resend OTP email. Please try again.'
-            }), 500
+    # Resend the existing OTP (Bypassed for Demo)
+    print(f"Demo Mode: Bypassed email resending. OTP is {recent_otp.otp_code}")
+    return jsonify({
+        'message': 'OTP has been resent (Demo Mode)',
+        'expires_at': recent_otp.created_at.isoformat()
+    }), 200
 
 @app.route('/uploads', methods=['POST'])
 @jwt_required()
